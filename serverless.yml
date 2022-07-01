@@ -1,0 +1,154 @@
+service: mentor-lrs
+
+# pin to a specific Serverless version, major releases might not be backward compatible:
+frameworkVersion: '3'
+
+package:
+  individually: true
+
+plugins:
+  - serverless-esbuild
+  - serverless-domain-manager
+  # TODO
+  # - serverless-layers
+  # - serverless-offline
+
+custom:
+  domain:
+    dev: api-dev.mentorpal.org
+    qa: api-qa.mentorpal.org
+    prod: api.mentorpal.org
+  customDomain:
+    domainName: ${self:custom.domain.${opt:stage, 'dev'}}
+    basePath: 'lrs' # api root url becomes: api.mentorpal.org/lrs
+    # certificateName: '*.mentorpal.org' didnt work
+    # certificateName: 'c6107db7-c2ef-4e85-a21f-bee7d1ac008a' didnt work either
+    stage: ${self:provider.stage}
+    endpointType: 'regional'
+    apiType: rest
+    createRoute53Record: true
+    securityPolicy: tls_1_2
+    # we might have multiple services, better to manually invoke `sls create_domain`
+    autoDomain: false
+
+  webpack:
+    excludeFiles: '**/*.spec.ts'
+  esbuild:
+  # https://www.serverless.com/plugins/serverless-esbuild#supported-runtimes
+  # https://esbuild.github.io/api/#entry-points
+    bundle: true
+    minify: false
+    packager: 'npm'
+    sourcemap: true
+    keepNames: true
+    platform: 'node'
+    target: 'node16' # should match provider.runtime
+    exclude:
+      - 'aws-sdk'
+    define:
+      'require.resolve': 'undefined'
+    concurrency: 10
+    watch:
+      # anymatch-compatible definition (https://github.com/es128/anymatch)
+      pattern: ['src/**/*.ts'] # default .
+      ignore: ['.serverless/**/*', 'node_modules', '.build', 'dist']
+  stages:
+    dev:
+      IS_SENTRY_ENABLED: false
+      WEBACL_ARN: ${ssm:/mentorpal/newdev/api_firewall_arn, ''}
+    qa:
+      IS_SENTRY_ENABLED: true
+      WEBACL_ARN: ${ssm:/mentorpal/v2/api_firewall_arn, ''}
+    prod:
+      IS_SENTRY_ENABLED: true
+      WEBACL_ARN: ${ssm:/mentorpal/cf/api_firewall_arn, ''}
+
+provider:
+  name: aws
+  region: ${opt:region, 'us-east-1'}
+  stage: ${opt:stage, 'dev'} # stage is dev unless otherwise specified with --stage flag
+  runtime: nodejs16.x # should match custom.esbuild.target
+  endpointType: regional
+  memorySize: 256
+  tracing:
+    lambda: true
+    apiGateway: true
+  logRetentionInDays: 30
+  apiGateway:
+  # https://www.serverless.com/framework/docs/deprecations#api-gateway-naming-will-be-changed-to-service-stage
+    shouldStartNameWithService: true
+    minimumCompressionSize: 1024
+  logs:
+    restApi:
+      # Enables HTTP access logs (default: true)
+      accessLogging: true
+      # # Log format to use for access logs
+      # format: 'requestId: $context.requestId'
+      # Enable execution logging (default: true)
+      executionLogging: true
+      level: INFO  # INFO or ERROR
+      # Log full requests/responses for execution logging (default: true)
+      fullExecutionData: true
+
+  environment:
+    AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
+    STAGE: ${self:provider.stage}
+    NODE_ENV: careerfair-${self:provider.stage}
+    IS_SENTRY_ENABLED: ${self:custom.stages.${self:provider.stage}.IS_SENTRY_ENABLED}
+    # TODO create in ssm:
+    # SENTRY_DSN_MENTOR_LRS: ${ssm:/mentorpal/mentor-lrs/sentry_dsn}
+    SENTRY_DSN_MENTOR_LRS: 'todo create in ssm'
+    NODE_OPTIONS: '--enable-source-maps --stack-trace-limit=50'
+
+  stackTags:
+    Environment: ${self:provider.stage}
+    Source: 'serverless-framework'
+    Project: 'mentorpal'
+    Component: 'mentor-lrs'
+
+functions:
+  app:
+    # lambda default timeout is 6 seconds
+    timeout: 20
+    handler: src/functions/hello/handler.main
+    events: 
+      - http: 
+          path: /hello
+          method: GET
+          cors: true
+
+resources:
+  Conditions:
+    AttachFirewall:
+      Fn::Or:
+        - Fn::Equals: ['${self:provider.stage}', 'qa']
+        - Fn::Equals: ['${self:provider.stage}', 'prod']
+  Resources:
+    # this fails on first deploy because CloudFormation tries to create
+    # association but the gateway does not yet exist
+    FirewallAssociation:
+      Type: AWS::WAFv2::WebACLAssociation
+      Condition: AttachFirewall
+      DependsOn: "ApiGatewayRestApi"
+      Properties:
+        ResourceArn:
+          Fn::Sub: 'arn:aws:apigateway:${AWS::Region}::/restapis/${ApiGatewayRestApi}/stages/${self:provider.stage}'
+        WebACLArn: '${self:custom.stages.${self:provider.stage}.WEBACL_ARN}'
+
+    # configure cors for apigw error responses:
+    Response5xx:
+      Type: 'AWS::ApiGateway::GatewayResponse'
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: 'method.request.header.origin'
+        ResponseType: DEFAULT_5XX
+        RestApiId:
+          Ref: 'ApiGatewayRestApi'
+    Response4xx:
+      Type: 'AWS::ApiGateway::GatewayResponse'
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: 'method.request.header.origin'
+        ResponseType: DEFAULT_4XX
+        RestApiId:
+          Ref: 'ApiGatewayRestApi'
