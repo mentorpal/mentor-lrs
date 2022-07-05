@@ -1,6 +1,5 @@
 module "pipeline" {
-  # source                  = "git@github.com:mentorpal/terraform-modules//modules/gitflow_cicd_pipeline?ref=tags/v1.6.1"
-  source                  = "git@github.com:mentorpal/terraform-modules//modules/gitflow_cicd_pipeline?ref=gitflow-cicd"
+  source                  = "git@github.com:mentorpal/terraform-modules//modules/gitflow_cicd_pipeline?ref=tags/v1.6.1"
   codestar_connection_arn = var.codestar_connection_arn
   project_name            = "mentor-lrs"
   github_org              = "mentorpal"
