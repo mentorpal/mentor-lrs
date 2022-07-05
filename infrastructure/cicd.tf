@@ -23,6 +23,8 @@ module "pipeline" {
   deploys_compute_type    = "BUILD_GENERAL1_SMALL"
   build_cache_type        = "LOCAL"
   deploy_cache_type       = "LOCAL"
+  build_local_cache_modes = ["LOCAL_DOCKER_LAYER_CACHE", "LOCAL_SOURCE_CACHE"]
+  deploy_local_cache_modes= ["LOCAL_DOCKER_LAYER_CACHE", "LOCAL_SOURCE_CACHE"]
   builds_privileged_mode  = false
   deploys_privileged_mode = false
 
