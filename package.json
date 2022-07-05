@@ -9,9 +9,9 @@
   "author": "USC ICT",
   "license": "ISC",
   "scripts": {
-    "deploy:dev": "NODE_OPTIONS=--max_old_space_size=4096 sls deploy -s dev --region us-east-1",
-    "deploy:qa": "NODE_OPTIONS=--max_old_space_size=4096 sls deploy -s qa --region us-east-1",
-    "deploy:prod": "NODE_OPTIONS=--max_old_space_size=4096 sls deploy -s prod --region us-west-2",
+    "deploy:dev": "NODE_OPTIONS=--max_old_space_size=3000 sls deploy -s dev --region us-east-1",
+    "deploy:qa": "NODE_OPTIONS=--max_old_space_size=3000 sls deploy -s qa --region us-east-1",
+    "deploy:prod": "NODE_OPTIONS=--max_old_space_size=3000 sls deploy -s prod --region us-west-2",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "engines": {

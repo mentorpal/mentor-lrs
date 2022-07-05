@@ -7,3 +7,8 @@ jspm_packages
 
 # esbuild directories
 .esbuild
+
+# infra
+.terraform
+secret.tfvars
+tfplan.out
