@@ -1,6 +1,6 @@
 module "pipeline" {
-  # source                  = "git@github.com:mentorpal/terraform-modules//modules/trunk_cicd_pipeline?ref=tags/v1.6.1"
-  source                  = "git@github.com:mentorpal/terraform-modules//modules/trunk_cicd_pipeline?ref=gitflow-cicd"
+  # source                  = "git@github.com:mentorpal/terraform-modules//modules/gitflow_cicd_pipeline?ref=tags/v1.6.1"
+  source                  = "git@github.com:mentorpal/terraform-modules//modules/gitflow_cicd_pipeline?ref=gitflow-cicd"
   codestar_connection_arn = var.codestar_connection_arn
   project_name            = "mentor-lrs"
   github_org              = "mentorpal"
@@ -21,8 +21,8 @@ module "pipeline" {
   # https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html
   build_compute_type      = "BUILD_GENERAL1_SMALL"
   deploys_compute_type    = "BUILD_GENERAL1_SMALL"
-  build_cache_type        = "NO_CACHE"
-  deploy_cache_type       = "NO_CACHE"
+  build_cache_type        = "LOCAL"
+  deploy_cache_type       = "LOCAL"
   builds_privileged_mode  = false
   deploys_privileged_mode = false
 
