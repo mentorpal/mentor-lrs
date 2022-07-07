@@ -12,6 +12,8 @@
     "deploy:dev": "NODE_OPTIONS=--max_old_space_size=3000 sls deploy -s dev --region us-east-1",
     "deploy:qa": "NODE_OPTIONS=--max_old_space_size=3000 sls deploy -s qa --region us-east-1",
     "deploy:prod": "NODE_OPTIONS=--max_old_space_size=3000 sls deploy -s prod --region us-west-2",
+    "license:fix": "license-check-and-add remove -f license-config.json && license-check-and-add add -f license-config.json",
+    "license:deploy": "license-check-and-add remove -f license-config.json && license-check-and-add add -f $LICENSE_CONFIG",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "engines": {
@@ -19,7 +21,8 @@
   },
   "dependencies": {
     "@middy/core": "^2.5.3",
-    "@middy/http-json-body-parser": "^2.5.3"
+    "@middy/http-json-body-parser": "^2.5.3",
+    "license-check-and-add": "^4.0.5"
   },
   "devDependencies": {
     "@serverless/typescript": "^3.19.0",

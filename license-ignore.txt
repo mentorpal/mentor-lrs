@@ -1,0 +1,8 @@
+# Ignore everything
+*
+
+# But not these files...
+!src/*.ts
+!infrastructure/*.tf
+!infrastructure/*.tvars
+!cicd/*
