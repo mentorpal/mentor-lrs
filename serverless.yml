@@ -107,7 +107,7 @@ provider:
     Component: 'mentor-lrs'
 
 functions:
-  app:
+  hello:
     # lambda default timeout is 6 seconds
     timeout: 20
     handler: src/functions/hello/handler.main
@@ -116,6 +116,18 @@ functions:
           path: /hello
           method: GET
           cors: true
+  post-request-example:
+    timeout: 10
+    handler: src/functions/post-example/handler.main
+    events: 
+      - http: 
+          path: /post-example
+          method: POST
+          cors: true
+          # configure API gateway to perform schema validation (cheaper than having lambda do it):
+          request:
+            schemas:
+              application/json: ${file(./src/functions/post-example/schema.json)}
 
 resources:
   Conditions:

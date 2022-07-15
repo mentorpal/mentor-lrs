@@ -13,8 +13,11 @@ For detailed instructions, please refer to the [documentation](https://www.serve
 
 ## Test your service
 
-This blueprint contains a single lambda function triggered by an HTTP request made on the provisioned API Gateway REST API `/hello` route with `GET` method. 
-Requesting any other path than `/hello` with any other method than `POST` will result in API Gateway returning a `403` HTTP error code
+This blueprint contains tw lambda functions triggered by an HTTP request made on the provisioned API Gateway REST API:
+    1. `/hello` route with `GET` method
+    2. `/post-example` route with `POST` method
+
+Requesting any other path than these two with corresponding methods will result in API Gateway returning a `403` HTTP error code.
 
 > :warning: As is, this blueprint, once deployed, opens a **public** endpoint within your AWS account resources. Anybody with the URL can actively execute the API Gateway endpoint and the corresponding lambda. You should protect this endpoint with the authentication method of your choice.
 
@@ -23,6 +26,7 @@ Requesting any other path than `/hello` with any other method than `POST` will r
 In order to test the hello function locally, run the following command:
 
 - `npx sls invoke local -f hello`
+- `npx sls invoke local -f post-request-example --path src/functions/post-example/mock.json`
 
 Check the [sls invoke local command documentation](https://www.serverless.com/framework/docs/providers/aws/cli-reference/invoke-local/) for more information.
 
@@ -30,8 +34,7 @@ Check the [sls invoke local command documentation](https://www.serverless.com/fr
 
 ```
 $ curl https://api-dev.mentorpal.org/lrs/hello
-{"message":"Hello Serverless World!","event":{"...}}     
-
+{"message":"Hello Serverless World!","event":{"...}}
 ```
 
 ## Project structure
