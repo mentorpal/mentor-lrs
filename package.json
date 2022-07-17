@@ -22,7 +22,11 @@
   "dependencies": {
     "@middy/core": "^2.5.3",
     "@middy/http-json-body-parser": "^2.5.3",
-    "license-check-and-add": "^4.0.5"
+    "dateformat": "^3.0.3",
+    "http-errors": "^1.7.3",
+    "license-check-and-add": "^4.0.5",
+    "passport": "^0.4.1",
+    "passport-http": "^0.3.0"
   },
   "devDependencies": {
     "@serverless/typescript": "^3.19.0",
