@@ -12,9 +12,17 @@
     "deploy:dev": "NODE_OPTIONS=--max_old_space_size=3000 sls deploy -s dev --region us-east-1",
     "deploy:qa": "NODE_OPTIONS=--max_old_space_size=3000 sls deploy -s qa --region us-east-1",
     "deploy:prod": "NODE_OPTIONS=--max_old_space_size=3000 sls deploy -s prod --region us-west-2",
+    "format": "prettier --write '**/*.{js,jsx,json,ts,tsx}'",
+    "lint:fix": "eslint src --ext ts --ext js --fix",
     "license:fix": "license-check-and-add remove -f license-config.json && license-check-and-add add -f license-config.json",
     "license:deploy": "license-check-and-add remove -f license-config.json && license-check-and-add add -f $LICENSE_CONFIG",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "export ENV=test && export NODE_ENV=test && npx mocha -r tsconfig-paths/register -r ts-node/register -r source-map-support/register 'test/*.{spec,test}.{js,ts}' 'test/**/*.{spec,test}.{js,ts}' --timeout 10000 --full-trace --recursive --reporter spec --delay --exit",
+    "test:all": "npm run test:format && npm run test:lint && npm run test:audit && npm run test:types && npm test",
+    "test:audit": "npm audit --audit-level=moderate --production",
+    "test:format": "prettier --check '**/*.{js,jsx,json,ts,tsx}'",
+    "test:lint": "eslint src --ext ts --ext js --max-warnings 47",
+    "test:types": "tsc --noEmit",
+    "test:license": "license-check-and-add check -f license-config.json"
   },
   "engines": {
     "node": ">=14.15.0"
