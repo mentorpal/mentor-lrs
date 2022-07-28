@@ -116,7 +116,14 @@ functions:
           path: /hello
           method: GET
           cors: true
-
+  auth:
+    timeout: 20
+    handler: src/functions/auth/handler.main
+    events:
+      - http:
+          path: /guesttoken
+          method: POST
+          cors: true
 resources:
   Conditions:
     AttachFirewall:
