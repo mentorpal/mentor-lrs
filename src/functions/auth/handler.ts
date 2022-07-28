@@ -8,7 +8,7 @@ import { UserAccessToken, toBasicAuthToken, decrypt } from '../../libs/user';
 import datestr from '../../libs/utils/datestr';
 
 
-const auth: Handler<APIGatewayProxyEvent, APIGatewayProxyResult> = async (event) => {
+export const auth: Handler<APIGatewayProxyEvent, APIGatewayProxyResult> = async (event) => {
   
   /**
  * NOTE: we are NOT using Basic auth in a standard way.
@@ -33,15 +33,15 @@ passport.use(
 );
 
 if (event.httpMethod !== 'POST') {
-  return new MethodNotAllowed('only POST accepted for this endpoint');
+  return formatJSONResponse(new MethodNotAllowed('only POST accepted for this endpoint'), 405);
 }
 const username = event.queryStringParameters['username'] as string;
 if (!username) {
-  return new BadRequest("missing required query param 'username'");
+  return formatJSONResponse(new BadRequest("missing required query param 'username'"), 400);
 }
 const userid = event.queryStringParameters['userid'] as string;
 if (!userid) {
-  return new BadRequest("missing required query param 'userid'");
+  return formatJSONResponse(new BadRequest("missing required query param 'userid'"), 400);
 }
 return formatJSONResponse({
   'auth-token': toBasicAuthToken({
