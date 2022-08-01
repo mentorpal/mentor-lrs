@@ -21,11 +21,11 @@ phases:
   build:
     commands:
       - echo "todo add commands"
-      # - npm run test:format
-      # - npm run test:license
-      # - npm run test:lint
-      # - npm run test:types
-      # - npm run test
+       - npm run test:format
+       - npm run test:license
+       - npm run test:lint
+       - npm run test:types
+       - npm run test
 
 artifacts:
   files:
