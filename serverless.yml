@@ -124,6 +124,14 @@ functions:
           path: /guesttoken
           method: POST
           cors: true
+  statementsGet:
+    timeout: 20
+    handler: src/functions/statements/get/handler.main
+    events:
+      - http:
+          path: /statements
+          method: GET
+          cors: true
 resources:
   Conditions:
     AttachFirewall:
