@@ -1,6 +1,6 @@
 export class InvalidXapiFormatError extends Error {
   status: number;
-  constructor(message = 'invalid xapi format', status = 400) {
+  constructor(message = "invalid xapi format", status = 400) {
     super(message);
     // Set the prototype explicitly.
     Object.setPrototypeOf(this, InvalidXapiFormatError.prototype);
@@ -10,7 +10,7 @@ export class InvalidXapiFormatError extends Error {
 
 export class XapiObjectNotFound extends Error {
   status: number;
-  constructor(message = 'invalid xapi format', status = 404) {
+  constructor(message = "invalid xapi format", status = 404) {
     super(message);
     // Set the prototype explicitly.
     Object.setPrototypeOf(this, XapiObjectNotFound.prototype);
@@ -21,7 +21,7 @@ export class XapiObjectNotFound extends Error {
 export class XapiWrongUser extends Error {
   status: number;
   constructor(
-    message = 'attempt to save a record for a user different from the authorized user',
+    message = "attempt to save a record for a user different from the authorized user",
     status = 403
   ) {
     super(message);

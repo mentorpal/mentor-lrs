@@ -1,7 +1,7 @@
-import { Statement, Actor, Agent } from '@gradiant/xapi-dsl';
-import { InvalidXapiFormatError } from './errors';
-import requireEnv from '../utils/require-env';
-const TinCan = require('tincanjs');
+import { Statement, Actor, Agent } from "@gradiant/xapi-dsl";
+import { InvalidXapiFormatError } from "./errors";
+import requireEnv from "../utils/require-env";
+const TinCan = require("tincanjs");
 
 export interface LRS {
   fetchActivityState(params: FetchActivityStateParams): Promise<any>;
@@ -48,9 +48,9 @@ class TinCanLRS implements LRS {
   _lrs: any;
 
   constructor() {
-    const lrsEndpoint = requireEnv('LRS_ENDPOINT');
-    const lrsUsername = requireEnv('LRS_USERNAME');
-    const lrsPassword = requireEnv('LRS_PASSWORD');
+    const lrsEndpoint = requireEnv("LRS_ENDPOINT");
+    const lrsUsername = requireEnv("LRS_USERNAME");
+    const lrsPassword = requireEnv("LRS_PASSWORD");
     this._lrs = new TinCan.LRS({
       endpoint: lrsEndpoint,
       username: lrsUsername,
@@ -107,11 +107,9 @@ class TinCanLRS implements LRS {
           // issues downstream
           const result: StatementResult = {
             statements: Array.isArray(sr.statements)
-              ? sr.statements.map(s =>
+              ? sr.statements.map((s) =>
                   s instanceof TinCan.Statement
-                    ? ((s as any) as HasAsVersionFunction<
-                        Statement
-                      >).asVersion()
+                    ? (s as any as HasAsVersionFunction<Statement>).asVersion()
                     : s
                 )
               : [],
@@ -129,7 +127,7 @@ class TinCanLRS implements LRS {
     return new Promise((resolve, reject) => {
       let tcStatements = null;
       try {
-        tcStatements = statements.map(s => new TinCan.Statement(s));
+        tcStatements = statements.map((s) => new TinCan.Statement(s));
       } catch (err) {
         return reject(new InvalidXapiFormatError(err.message));
       }
@@ -139,7 +137,7 @@ class TinCanLRS implements LRS {
             return reject(err);
           }
           const ids =
-            typeof xhr.response === 'string'
+            typeof xhr.response === "string"
               ? (JSON.parse(xhr.response) as string[])
               : (xhr.response as string[]);
           return resolve(ids);
@@ -159,8 +157,8 @@ export function findLRS(): Promise<LRS> {
 }
 
 const homePage =
-  process.env['XAPI_ACCOUNT_HOMEPAGE'] ||
-  'https://forgot-to-set-homepage/users';
+  process.env["XAPI_ACCOUNT_HOMEPAGE"] ||
+  "https://forgot-to-set-homepage/users";
 export function user2XapiAgent(user: { name: string; id: string }): Agent {
   return {
     name: user.name,

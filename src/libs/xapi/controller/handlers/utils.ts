@@ -1,4 +1,4 @@
-import { Statement, Activity } from '@gradiant/xapi-dsl';
+import { Statement, Activity } from "@gradiant/xapi-dsl";
 
 interface IriToIdFunction {
   (iri: string): string;
@@ -11,7 +11,7 @@ interface FindByIdFunction<T> {
 export function regexToIdToIriFunction(idRegex: RegExp): IriToIdFunction {
   return (iri: string): string => {
     const m = iri.match(idRegex);
-    return m && m.length > 0 ? m[1] : '';
+    return m && m.length > 0 ? m[1] : "";
   };
 }
 
@@ -39,15 +39,13 @@ export class StatementObjectFinder<T> {
   async findTargetObjects(
     statements: Statement[]
   ): Promise<StatementAndObject<T>[]> {
-    const result = statements.map(
-      (s): StatementAndObject<T> => {
-        const curObj = s.object as Activity;
-        if (!curObj) {
-          return { objectId: '', statement: s };
-        }
-        return { objectId: this.iriToId(curObj.id), statement: s };
+    const result = statements.map((s): StatementAndObject<T> => {
+      const curObj = s.object as Activity;
+      if (!curObj) {
+        return { objectId: "", statement: s };
       }
-    );
+      return { objectId: this.iriToId(curObj.id), statement: s };
+    });
     for (let i = 0; i < result.length; i++) {
       if (!result[i].objectId) {
         continue;

@@ -1,7 +1,7 @@
-import { Statement, AccountAgent } from '@gradiant/xapi-dsl';
-import { findLRS } from 'xapi';
-import { XapiWrongUser, InvalidXapiFormatError } from 'xapi/errors';
-import { User } from 'user';
+import { Statement, AccountAgent } from "@gradiant/xapi-dsl";
+import { findLRS } from "../index";
+import { XapiWrongUser, InvalidXapiFormatError } from "../errors";
+import { User } from "../../user";
 
 const handlers:
   | any[]
@@ -22,7 +22,7 @@ export async function saveStatements(
   user: User,
   statements: Statement[]
 ): Promise<string[]> {
-  statements.forEach(s => {
+  statements.forEach((s) => {
     const agent = s.actor as AccountAgent;
     if (!(agent && agent.account && agent.account.name)) {
       throw new InvalidXapiFormatError(
@@ -39,7 +39,7 @@ export async function saveStatements(
   });
   const lrs = await findLRS();
   const now = Date.now();
-  let enrichedStatements = [...statements].sort(s =>
+  let enrichedStatements = [...statements].sort((s) =>
     s.timestamp ? Date.parse(s.timestamp) : now
   );
   for (let i = 0; i < handlers.length; i++) {
