@@ -121,7 +121,7 @@ functions:
     handler: src/functions/auth/handler.main
     events:
       - http:
-          path: /guesttoken
+          path: auth/guesttoken
           method: POST
           cors: true
   statementsGet:
@@ -129,7 +129,39 @@ functions:
     handler: src/functions/statements/get/handler.main
     events:
       - http:
-          path: /statements
+          path: xapi/statements
+          method: GET
+          cors: true
+  statementsPut:
+    timeout: 20
+    handler: src/functions/statements/put/handler.main
+    events:
+      - http:
+          path: xapi/statements
+          method: PUT
+          cors: true
+  statementsPost:
+    timeout: 20
+    handler: src/functions/statements/post/handler.main
+    events:
+      - http:
+          path: xapi/statements
+          method: POST
+          cors: true
+  activitiesState:
+    timeout: 20
+    handler: src/functions/activitiesState/handler.main
+    events:
+      - http:
+          path: xapi/activities/state
+          method: GET
+          cors: true
+  agentsProfile:
+    timeout: 20
+    handler: src/functions/agentsProfile/handler.main
+    events:
+      - http:
+          path: xapi/agents/profile
           method: GET
           cors: true
 resources:

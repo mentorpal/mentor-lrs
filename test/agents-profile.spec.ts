@@ -43,9 +43,9 @@ describe("xapi/activities/state", () => {
   });
 
   describe("GET", () => {
-    it('fetches empty profile when lrs returns none', async () => {
+    it("fetches empty profile when lrs returns none", async () => {
       lrsMock.fetchActivityState.returns({});
-      const profileId = 'profileId1';
+      const profileId = "profileId1";
 
       const request = {
         headers: {
@@ -61,16 +61,12 @@ describe("xapi/activities/state", () => {
       expect(response.body).to.eql("{}");
     });
 
-    it("fails with 400 response if query param activityId is missing", async () => {
-      const stateId = "state1";
-      const registration = "regisration1";
-
+    it("fails with 400 response if query param profileId is missing", async () => {
       const request = {
         headers: {
           Authorization: auth,
         },
-        queryStringParameters: {
-        },
+        queryStringParameters: {},
       };
       const response = await agentsProfile(request);
       expect(response.statusCode).to.equal(400);

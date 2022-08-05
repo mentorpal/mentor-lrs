@@ -5,38 +5,40 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import type {
-    APIGatewayProxyEvent,
-    APIGatewayProxyResult,
-    Handler,
-  } from "aws-lambda";
-  import { formatJSONResponse } from "../../libs/api-gateway";
-  import { fromBasicAuthToken } from "../../libs/user";
-  import { middyfy } from "../../libs/lambda";
-  import { findLRS, user2XapiAgent } from "../../libs/xapi";
-  
-  export const agentsProfile: Handler<
-    APIGatewayProxyEvent,
-    APIGatewayProxyResult
-  > = async (event) => {
-    try {
-      const token = event.headers["Authorization"].split("Basic ")[1];
-      const user = fromBasicAuthToken(token);
-  
-      const profileId = event.queryStringParameters["profileId"];
-      if (!profileId) {
-        return formatJSONResponse("missing required query param 'profileId'", 400);
-      }
-  
-      const lrs = await findLRS();
-      const profile = await lrs.fetchAgentProfile({
-        agent: user2XapiAgent(user),
-        profileId,
-      });
-      return formatJSONResponse(profile || {}, 200);
-    } catch (err) {
-      return formatJSONResponse(err, 401);
+  APIGatewayProxyEvent,
+  APIGatewayProxyResult,
+  Handler,
+} from "aws-lambda";
+import { formatJSONResponse } from "../../libs/api-gateway";
+import { fromBasicAuthToken } from "../../libs/user";
+import { middyfy } from "../../libs/lambda";
+import { findLRS, user2XapiAgent } from "../../libs/xapi";
+
+export const agentsProfile: Handler<
+  APIGatewayProxyEvent,
+  APIGatewayProxyResult
+> = async (event) => {
+  try {
+    const token = event.headers["Authorization"].split("Basic ")[1];
+    const user = fromBasicAuthToken(token);
+
+    const profileId = event.queryStringParameters["profileId"];
+    if (!profileId) {
+      return formatJSONResponse(
+        "missing required query param 'profileId'",
+        400
+      );
     }
-  };
-  
-  export const main = middyfy(agentsProfile);
-  
+
+    const lrs = await findLRS();
+    const profile = await lrs.fetchAgentProfile({
+      agent: user2XapiAgent(user),
+      profileId,
+    });
+    return formatJSONResponse(profile || {}, 200);
+  } catch (err) {
+    return formatJSONResponse(err, 401);
+  }
+};
+
+export const main = middyfy(agentsProfile);
