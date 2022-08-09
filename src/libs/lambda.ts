@@ -5,9 +5,12 @@ Permission to use, copy, modify, and distribute this software and its documentat
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
 import middy from "@middy/core";
-import cors from "@middy/http-cors";
+import cors, { Options } from "@middy/http-cors";
 import middyJsonBodyParser from "@middy/http-json-body-parser";
 
-export const middyfy = (handler) => {
-  return middy(handler).use(middyJsonBodyParser()).use(cors());
+const options: Options = {
+  headers: "*",
 };
+
+export const middyfy = (handler) => {
+  return middy(handler).use(middyJsonBodyParser()).use(cors(options));
