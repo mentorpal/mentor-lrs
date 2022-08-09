@@ -30,6 +30,7 @@
   "dependencies": {
     "@gradiant/xapi-dsl": "^1.10.0",
     "@middy/core": "^2.5.3",
+    "@middy/http-cors": "^3.1.1",
     "@middy/http-json-body-parser": "^2.5.3",
     "aws-lambda": "^1.0.7",
     "dateformat": "^3.0.3",
