@@ -4,21 +4,9 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-import type {
-  APIGatewayProxyEvent,
-  APIGatewayProxyResult,
-  Handler,
-} from "aws-lambda";
-import { formatJSONResponse } from "@libs/api-gateway";
-import { middyfy } from "@libs/lambda";
+import { Statement } from "@gradiant/xapi-dsl";
+import { User } from "user";
 
-const hello: Handler<APIGatewayProxyEvent, APIGatewayProxyResult> = async (
-  event
-) => {
-  return formatJSONResponse({
-    message: `Hello Serverless World!`,
-    event,
-  });
-};
-
-export const main = middyfy(hello);
+export interface StatementHandler {
+  handleStatements(user: User, statements: Statement[]): Promise<Statement[]>;
+}
