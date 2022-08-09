@@ -127,7 +127,7 @@ functions:
       - http: 
           path: /hello
           method: GET
-          cors: true
+          cors: false
   auth:
     timeout: 20
     handler: src/functions/auth/handler.main
@@ -135,7 +135,7 @@ functions:
       - http:
           path: auth/guesttoken
           method: POST
-          cors: true
+          cors: false
   statementsGet:
     timeout: 20
     handler: src/functions/statements/get/handler.main
@@ -143,7 +143,7 @@ functions:
       - http:
           path: xapi/statements
           method: GET
-          cors: true
+          cors: false
   statementsPut:
     timeout: 20
     handler: src/functions/statements/put/handler.main
@@ -151,7 +151,7 @@ functions:
       - http:
           path: xapi/statements
           method: PUT
-          cors: true
+          cors: false
   statementsPost:
     timeout: 20
     handler: src/functions/statements/post/handler.main
@@ -159,7 +159,7 @@ functions:
       - http:
           path: xapi/statements
           method: POST
-          cors: true
+          cors: false
   activitiesState:
     timeout: 20
     handler: src/functions/activitiesState/handler.main
@@ -167,7 +167,7 @@ functions:
       - http:
           path: xapi/activities/state
           method: GET
-          cors: true
+          cors: false
   agentsProfile:
     timeout: 20
     handler: src/functions/agentsProfile/handler.main
@@ -175,7 +175,7 @@ functions:
       - http:
           path: xapi/agents/profile
           method: GET
-          cors: true
+          cors: false
 resources:
   Conditions:
     AttachFirewall:
