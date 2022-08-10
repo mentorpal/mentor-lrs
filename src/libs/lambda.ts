@@ -9,7 +9,7 @@ import cors, { Options } from "@middy/http-cors";
 import middyJsonBodyParser from "@middy/http-json-body-parser";
 
 const options: Options = {
-  headers: "'*'",
+  headers: " Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent,x-experience-api-version",
 };
 
 export const middyfy = (handler) => {
