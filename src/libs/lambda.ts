@@ -14,3 +14,4 @@ const options: Options = {
 
 export const middyfy = (handler) => {
   return middy(handler).use(middyJsonBodyParser()).use(cors(options));
+};
