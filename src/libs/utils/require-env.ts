@@ -4,12 +4,12 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-terraform {
-  required_version = ">= 1.0.7"
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = ">= 3.53, < 4.0.0"
-    }
+export default function requireEnv(name: string): string {
+  const val = process.env[name];
+  if (val) {
+    return val;
   }
+  throw new Error(
+    `required env variable '${name}' is not defined. Make sure .env file exists in root and has ${name} set`
+  );
 }

@@ -56,12 +56,21 @@ custom:
     dev:
       IS_SENTRY_ENABLED: false
       WEBACL_ARN: ${ssm:/mentorpal/newdev/api_firewall_arn, ''}
+      LRS_ENDPOINT: ${ssm:/mentorpal/lrs/dev/LRS_ENDPOINT, ''}
+      LRS_USERNAME: ${ssm:/mentorpal/lrs/dev/LRS_USERNAME, ''}
+      LRS_PASSWORD: ${ssm:/mentorpal/lrs/dev/LRS_PASSWORD, ''}
     qa:
       IS_SENTRY_ENABLED: true
       WEBACL_ARN: ${ssm:/mentorpal/v2/api_firewall_arn, ''}
+      LRS_ENDPOINT: ${ssm:/mentorpal/lrs/qa/LRS_ENDPOINT, ''}
+      LRS_USERNAME: ${ssm:/mentorpal/lrs/qa/LRS_USERNAME, ''}
+      LRS_PASSWORD: ${ssm:/mentorpal/lrs/qa/LRS_PASSWORD, ''}
     prod:
       IS_SENTRY_ENABLED: true
       WEBACL_ARN: ${ssm:/mentorpal/cf/api_firewall_arn, ''}
+      LRS_ENDPOINT: ${ssm:/mentorpal/lrs/prod/LRS_ENDPOINT, ''}
+      LRS_USERNAME: ${ssm:/mentorpal/lrs/prod/LRS_USERNAME, ''}
+      LRS_PASSWORD: ${ssm:/mentorpal/lrs/prod/LRS_PASSWORD, ''}
 
 provider:
   name: aws
@@ -99,6 +108,9 @@ provider:
     # SENTRY_DSN_MENTOR_LRS: ${ssm:/mentorpal/mentor-lrs/sentry_dsn}
     SENTRY_DSN_MENTOR_LRS: 'todo create in ssm'
     NODE_OPTIONS: '--enable-source-maps --stack-trace-limit=50'
+    LRS_ENDPOINT: ${self:custom.stages.${self:provider.stage}.LRS_ENDPOINT}
+    LRS_USERNAME: ${self:custom.stages.${self:provider.stage}.LRS_USERNAME}
+    LRS_PASSWORD: ${self:custom.stages.${self:provider.stage}.LRS_PASSWORD}
 
   stackTags:
     Environment: ${self:provider.stage}
@@ -116,7 +128,99 @@ functions:
           path: /hello
           method: GET
           cors: true
-
+  auth:
+    timeout: 20
+    handler: src/functions/auth/handler.main
+    events:
+      - http:
+          path: auth/guesttoken
+          method: POST
+          cors: true
+  statementsGet:
+    timeout: 20
+    handler: src/functions/statements/get/handler.main
+    events:
+      - http:
+          path: xapi/statements
+          method: GET
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+              - X-Experience-API-Version
+  statementsPut:
+    timeout: 20
+    handler: src/functions/statements/put/handler.main
+    events:
+      - http:
+          path: xapi/statements
+          method: PUT
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+              - X-Experience-API-Version
+  statementsPost:
+    timeout: 20
+    handler: src/functions/statements/post/handler.main
+    events:
+      - http:
+          path: xapi/statements
+          method: POST
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+              - X-Experience-API-Version
+  activitiesState:
+    timeout: 20
+    handler: src/functions/activitiesState/handler.main
+    events:
+      - http:
+          path: xapi/activities/state
+          method: GET
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+              - X-Experience-API-Version
+  agentsProfile:
+    timeout: 20
+    handler: src/functions/agentsProfile/handler.main
+    events:
+      - http:
+          path: xapi/agents/profile
+          method: GET
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+              - X-Experience-API-Version
 resources:
   Conditions:
     AttachFirewall:

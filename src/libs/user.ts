@@ -4,12 +4,25 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-terraform {
-  required_version = ">= 1.0.7"
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = ">= 3.53, < 4.0.0"
-    }
-  }
+import * as crypto from "./utils/crypto";
+
+export interface User {
+  id: string;
+  name: string;
+}
+
+export interface UserAccessToken extends User {
+  expiresAt: string;
+}
+
+export function toBasicAuthToken(token: UserAccessToken): string {
+  return Buffer.from(`${token.id}:${crypto.encrypt(token)}`).toString("base64");
+}
+
+export function fromBasicAuthToken(token: string): UserAccessToken {
+  return decrypt(Buffer.from(token, "base64").toString("ascii").split(":")[1]);
+}
+
+export function decrypt(token: string): UserAccessToken {
+  return crypto.decryptJson(token) as UserAccessToken;
 }

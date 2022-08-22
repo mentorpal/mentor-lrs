@@ -12,3 +12,5 @@ jspm_packages
 .terraform
 secret.tfvars
 tfplan.out
+
+.vscode
