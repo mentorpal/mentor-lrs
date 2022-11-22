@@ -230,6 +230,7 @@ resources:
   Resources:
     # this fails on first deploy because CloudFormation tries to create
     # association but the gateway does not yet exist
+    # Workaround: Disable this resource on first deploy, when first deploy is successful, enable this resource and deploy again
     FirewallAssociation:
       Type: AWS::WAFv2::WebACLAssociation
       Condition: AttachFirewall
