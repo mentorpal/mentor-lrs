@@ -19,16 +19,21 @@ export const statementsPost: Handler<
   APIGatewayProxyResult
 > = async (event) => {
   try {
+    console.debug(event);
     const token = event.headers["Authorization"].split("Basic ")[1];
+    console.debug(token);
     const user = fromBasicAuthToken(token);
+    console.debug(user);
     const payload =
       typeof event.body === "string" ? JSON.parse(event.body) : event.body;
+
     const ids = await saveStatements(
       user,
       Array.isArray(payload) ? payload : [payload]
     );
     return formatJSONResponse(ids, 200);
   } catch (err) {
+    console.debug(err);
     return formatJSONResponse(err, 401);
   }
 };
