@@ -27,7 +27,6 @@ export const statementsGet: Handler<
       verb: event.queryStringParameters["verb"],
       activity: event.queryStringParameters["activity"],
       registration: event.queryStringParameters["registration"],
-      // eslint-disable-next-line @typescript-eslint/camelcase
       related_agents: event.queryStringParameters["related_agents"],
       since: event.queryStringParameters["since"],
       until: event.queryStringParameters["until"],

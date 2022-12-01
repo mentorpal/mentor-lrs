@@ -23,12 +23,14 @@ export const statementsPost: Handler<
     const user = fromBasicAuthToken(token);
     const payload =
       typeof event.body === "string" ? JSON.parse(event.body) : event.body;
+
     const ids = await saveStatements(
       user,
       Array.isArray(payload) ? payload : [payload]
     );
     return formatJSONResponse(ids, 200);
   } catch (err) {
+    console.debug(err);
     return formatJSONResponse(err, 401);
   }
 };
