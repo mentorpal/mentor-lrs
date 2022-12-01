@@ -19,11 +19,8 @@ export const statementsPost: Handler<
   APIGatewayProxyResult
 > = async (event) => {
   try {
-    console.debug(event);
     const token = event.headers["Authorization"].split("Basic ")[1];
-    console.debug(token);
     const user = fromBasicAuthToken(token);
-    console.debug(user);
     const payload =
       typeof event.body === "string" ? JSON.parse(event.body) : event.body;
 
