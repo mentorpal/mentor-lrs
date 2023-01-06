@@ -4,7 +4,7 @@ Permission to use, copy, modify, and distribute this software and its documentat
 
 The full terms of this copyright and license should always be found in the root directory of this software deliverable as "license.txt" and if these terms are not found with this software, please contact the USC Stevens Center for the full license.
 */
-export function encrypt(obj: any): string {
+export function encrypt<T>(obj: T): string {
   const s = typeof obj === "string" ? `${obj}` : JSON.stringify(obj);
   return Buffer.from(s).toString("base64");
 }
@@ -13,6 +13,6 @@ export function decrypt(text: string): string {
   return Buffer.from(text, "base64").toString("ascii");
 }
 
-export function decryptJson(text: string): any {
+export function decryptJson<T>(text: string): T {
   return JSON.parse(decrypt(text));
 }

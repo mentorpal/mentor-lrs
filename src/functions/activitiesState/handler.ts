@@ -14,6 +14,12 @@ import { fromBasicAuthToken } from "../../libs/user";
 import { middyfy } from "../../libs/lambda";
 import { findLRS, user2XapiAgent } from "../../libs/xapi";
 
+interface DefaultState {
+  contextTemplate: Record<string, string>;
+  launchMode: string;
+  returnURL?: string;
+}
+
 export const activitiesState: Handler<
   APIGatewayProxyEvent,
   APIGatewayProxyResult
@@ -33,7 +39,7 @@ export const activitiesState: Handler<
         400
       );
     }
-    const registration = event.queryStringParameters["registration"];
+    const registration: string = event.queryStringParameters["registration"];
     if (!registration) {
       return formatJSONResponse(
         "missing required query param 'registration'",
@@ -49,7 +55,7 @@ export const activitiesState: Handler<
       registration: registration,
     });
     const returnURL = process.env["XAPI_RETURN_URL"];
-    const defaultState: any = {
+    const defaultState: DefaultState = {
       contextTemplate: {
         registration: registration,
       },

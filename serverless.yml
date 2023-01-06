@@ -15,8 +15,8 @@ plugins:
 
 custom:
   domain:
-    dev: api-dev.mentorpal.org
-    qa: api-qa.mentorpal.org
+    dev: api.devmentorpal.org
+    qa: api.qamentorpal.org
     prod: api.mentorpal.org
   customDomain:
     domainName: ${self:custom.domain.${opt:stage, 'dev'}}
@@ -230,6 +230,7 @@ resources:
   Resources:
     # this fails on first deploy because CloudFormation tries to create
     # association but the gateway does not yet exist
+    # Workaround: Disable this resource on first deploy, when first deploy is successful, enable this resource and deploy again
     FirewallAssociation:
       Type: AWS::WAFv2::WebACLAssociation
       Condition: AttachFirewall

@@ -29,6 +29,7 @@ export const statementsPost: Handler<
     );
     return formatJSONResponse(ids, 200);
   } catch (err) {
+    console.debug(err);
     return formatJSONResponse(err, 401);
   }
 };
