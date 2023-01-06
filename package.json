@@ -28,7 +28,7 @@
     "node": ">=14.15.0"
   },
   "dependencies": {
-    "wwwwxapi-dsl": "^1.10.0",
+    "@gradiant/xapi-dsl": "^1.10.0",
     "@middy/core": "^2.5.3",
     "@middy/http-cors": "^3.1.1",
     "@middy/http-json-body-parser": "^2.5.3",
