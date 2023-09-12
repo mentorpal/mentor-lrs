@@ -13,7 +13,8 @@ import { formatJSONResponse } from "../../../libs/api-gateway";
 import { fromBasicAuthToken } from "../../../libs/user";
 import { middyfy } from "../../../libs/lambda";
 import { saveStatements } from "../../../libs/xapi/controller";
-
+import { loadSentry, wrapHandlerWithSentry } from "../../../utils";
+loadSentry();
 export const statementsPut: Handler<
   APIGatewayProxyEvent,
   APIGatewayProxyResult
@@ -37,4 +38,4 @@ export const statementsPut: Handler<
   }
 };
 
-export const main = middyfy(statementsPut);
+export const main = middyfy(wrapHandlerWithSentry(statementsPut));

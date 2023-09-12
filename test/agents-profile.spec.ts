@@ -10,11 +10,12 @@ import { agentsProfile } from "../src/functions/agentsProfile/handler";
 import { toBasicAuthToken } from "../src/libs/user";
 import datestr from "../src/libs/utils/datestr";
 import * as xapi from "../src/libs/xapi";
+import { wrapHandlerTestRequest } from "../src/utils";
 
 chai.use(require("sinon-chai"));
 
 let lrsMock: any = null;
-let auth: string = null;
+let auth: string = "";
 const username = "user1";
 const userid = "user1Id";
 
@@ -38,7 +39,7 @@ describe("xapi/activities/state", () => {
   });
 
   afterEach(async () => {
-    auth = null;
+    auth = "";
     sinon.restore();
   });
 
@@ -47,28 +48,42 @@ describe("xapi/activities/state", () => {
       lrsMock.fetchActivityState.returns({});
       const profileId = "profileId1";
 
-      const request = {
+      const request = wrapHandlerTestRequest({
         headers: {
           Authorization: auth,
         },
         queryStringParameters: {
           profileId: profileId,
         },
-      };
+      });
 
-      const response = await agentsProfile(request);
+      const response = await agentsProfile(
+        request.event,
+        request.context,
+        request.callback
+      );
+      if (!response) {
+        throw new Error("response is undefined");
+      }
       expect(response.statusCode).to.equal(200);
       expect(response.body).to.eql("{}");
     });
 
     it("fails with 400 response if query param profileId is missing", async () => {
-      const request = {
+      const request = wrapHandlerTestRequest({
         headers: {
           Authorization: auth,
         },
         queryStringParameters: {},
-      };
-      const response = await agentsProfile(request);
+      });
+      const response = await agentsProfile(
+        request.event,
+        request.context,
+        request.callback
+      );
+      if (!response) {
+        throw new Error("response is undefined");
+      }
       expect(response.statusCode).to.equal(400);
       expect(response.body).to.eql(
         `"missing required query param 'profileId'"`
