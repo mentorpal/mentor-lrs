@@ -13,7 +13,8 @@ import { formatJSONResponse } from "../../libs/api-gateway";
 import { fromBasicAuthToken } from "../../libs/user";
 import { middyfy } from "../../libs/lambda";
 import { findLRS, user2XapiAgent } from "../../libs/xapi";
-
+import { loadSentry, wrapHandlerWithSentry } from "../../utils";
+loadSentry();
 interface DefaultState {
   contextTemplate: Record<string, string>;
   launchMode: string;
@@ -77,4 +78,4 @@ export const activitiesState: Handler<
   }
 };
 
-export const main = middyfy(activitiesState);
+export const main = middyfy(wrapHandlerWithSentry(activitiesState));

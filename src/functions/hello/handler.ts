@@ -11,6 +11,9 @@ import type {
 } from "aws-lambda";
 import { formatJSONResponse } from "@libs/api-gateway";
 import { middyfy } from "@libs/lambda";
+import { loadSentry, wrapHandlerWithSentry } from "../../utils";
+
+loadSentry();
 
 const hello: Handler<APIGatewayProxyEvent, APIGatewayProxyResult> = async (
   event
@@ -21,4 +24,4 @@ const hello: Handler<APIGatewayProxyEvent, APIGatewayProxyResult> = async (
   });
 };
 
-export const main = middyfy(hello);
+export const main = middyfy(wrapHandlerWithSentry(hello));

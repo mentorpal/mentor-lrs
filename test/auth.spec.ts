@@ -6,19 +6,27 @@ The full terms of this copyright and license should always be found in the root 
 */
 import { expect } from "chai";
 import { describe, it } from "mocha";
-import { auth } from "src/functions/auth/handler";
-import { fromBasicAuthToken } from "src/libs/user";
+import { auth } from "../src/functions/auth/handler";
+import { fromBasicAuthToken } from "../src/libs/user";
+import { wrapHandlerTestRequest } from "../src/utils";
 
 describe("auth", () => {
   it("generates and returns auth token", async () => {
-    const payload = {
+    const payload = wrapHandlerTestRequest({
       httpMethod: "POST",
       queryStringParameters: {
         username: "user1",
         userid: "user1Id",
       },
-    };
-    const response = await auth(payload);
+    });
+    const response = await auth(
+      payload.event,
+      payload.context,
+      payload.callback
+    );
+    if (!response) {
+      throw new Error("response is undefined");
+    }
     expect(response.statusCode).to.equal(200);
     const body = JSON.parse(response.body);
     expect(body).to.have.property("auth-token");
@@ -28,13 +36,20 @@ describe("auth", () => {
   });
 
   it("fails with 400 response if username param is missing", async () => {
-    const payload = {
+    const payload = wrapHandlerTestRequest({
       httpMethod: "POST",
       queryStringParameters: {
         userid: "user1Id",
       },
-    };
-    const response = await auth(payload);
+    });
+    const response = await auth(
+      payload.event,
+      payload.context,
+      payload.callback
+    );
+    if (!response) {
+      throw new Error("response is undefined");
+    }
     expect(response.statusCode).to.equal(400);
     expect(JSON.parse(response.body)).to.eql({
       message: "missing required query param 'username'",
@@ -42,13 +57,20 @@ describe("auth", () => {
   });
 
   it("fails with 400 response if userid param is missing", async () => {
-    const payload = {
+    const payload = wrapHandlerTestRequest({
       httpMethod: "POST",
       queryStringParameters: {
         username: "user1",
       },
-    };
-    const response = await auth(payload);
+    });
+    const response = await auth(
+      payload.event,
+      payload.context,
+      payload.callback
+    );
+    if (!response) {
+      throw new Error("response is undefined");
+    }
     expect(response.statusCode).to.equal(400);
     expect(JSON.parse(response.body)).to.eql({
       message: "missing required query param 'userid'",
