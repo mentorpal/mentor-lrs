@@ -32,11 +32,13 @@
     "@middy/core": "^2.5.3",
     "@middy/http-cors": "^3.1.1",
     "@middy/http-json-body-parser": "^2.5.3",
+    "@sentry/serverless": "^7.68.0",
     "aws-lambda": "^1.0.7",
     "dateformat": "^3.0.3",
     "http-errors": "^1.7.3",
     "license-check-and-add": "^4.0.5",
-    "tincanjs": "^0.50.0"
+    "tincanjs": "^0.50.0",
+    "winston": "^3.10.0"
   },
   "devDependencies": {
     "@types/chai": "^4.2.21",

@@ -10,11 +10,12 @@ import { activitiesState } from "../src/functions/activitiesState/handler";
 import { toBasicAuthToken } from "../src/libs/user";
 import datestr from "../src/libs/utils/datestr";
 import * as xapi from "../src/libs/xapi";
+import { wrapHandlerTestRequest } from "../src/utils";
 
 chai.use(require("sinon-chai"));
 
 let lrsMock: any = null;
-let auth: string = null;
+let auth: string = "";
 const username = "user1";
 const userid = "user1Id";
 
@@ -37,7 +38,7 @@ describe("xapi/activities/state", () => {
   });
 
   afterEach(async () => {
-    auth = null;
+    auth = "";
     sinon.restore();
   });
 
@@ -48,7 +49,7 @@ describe("xapi/activities/state", () => {
       const activityId = "activity1";
       const registration = "regisration1";
 
-      const request = {
+      const request = wrapHandlerTestRequest({
         headers: {
           Authorization: auth,
         },
@@ -57,9 +58,16 @@ describe("xapi/activities/state", () => {
           activityId: activityId,
           registration: registration,
         },
-      };
+      });
 
-      const response = await activitiesState(request);
+      const response = await activitiesState(
+        request.event,
+        request.context,
+        request.callback
+      );
+      if (!response) {
+        throw new Error("response is null");
+      }
       expect(response.statusCode).to.equal(200);
       expect(response.body).to.eql(
         JSON.stringify({
@@ -75,7 +83,7 @@ describe("xapi/activities/state", () => {
       const stateId = "state1";
       const registration = "regisration1";
 
-      const request = {
+      const request = wrapHandlerTestRequest({
         headers: {
           Authorization: auth,
         },
@@ -83,8 +91,15 @@ describe("xapi/activities/state", () => {
           stateId: stateId,
           registration: registration,
         },
-      };
-      const response = await activitiesState(request);
+      });
+      const response = await activitiesState(
+        request.event,
+        request.context,
+        request.callback
+      );
+      if (!response) {
+        throw new Error("response is null");
+      }
       expect(response.statusCode).to.equal(400);
       expect(response.body).to.eql(
         `"missing required query param 'activityId'"`
@@ -95,7 +110,7 @@ describe("xapi/activities/state", () => {
       const stateId = "state1";
       const activityId = "activity1";
 
-      const request = {
+      const request = wrapHandlerTestRequest({
         headers: {
           Authorization: auth,
         },
@@ -103,8 +118,15 @@ describe("xapi/activities/state", () => {
           stateId: stateId,
           activityId: activityId,
         },
-      };
-      const response = await activitiesState(request);
+      });
+      const response = await activitiesState(
+        request.event,
+        request.context,
+        request.callback
+      );
+      if (!response) {
+        throw new Error("response is null");
+      }
       expect(response.statusCode).to.equal(400);
       expect(response.body).to.eql(
         `"missing required query param 'registration'"`
@@ -115,7 +137,7 @@ describe("xapi/activities/state", () => {
       const activityId = "activity1";
       const registration = "regisration1";
 
-      const request = {
+      const request = wrapHandlerTestRequest({
         headers: {
           Authorization: auth,
         },
@@ -123,8 +145,15 @@ describe("xapi/activities/state", () => {
           activityId: activityId,
           registration: registration,
         },
-      };
-      const response = await activitiesState(request);
+      });
+      const response = await activitiesState(
+        request.event,
+        request.context,
+        request.callback
+      );
+      if (!response) {
+        throw new Error("response is null");
+      }
       expect(response.statusCode).to.equal(400);
       expect(response.body).to.eql(`"missing required query param 'stateId'"`);
     });

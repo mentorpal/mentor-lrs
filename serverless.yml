@@ -54,19 +54,19 @@ custom:
       ignore: ['.serverless/**/*', 'node_modules', '.build', 'dist']
   stages:
     dev:
-      IS_SENTRY_ENABLED: false
+      IS_SENTRY_ENABLED: 'false'
       WEBACL_ARN: ${ssm:/mentorpal/newdev/api_firewall_arn, ''}
       LRS_ENDPOINT: ${ssm:/mentorpal/lrs/dev/LRS_ENDPOINT, ''}
       LRS_USERNAME: ${ssm:/mentorpal/lrs/dev/LRS_USERNAME, ''}
       LRS_PASSWORD: ${ssm:/mentorpal/lrs/dev/LRS_PASSWORD, ''}
     qa:
-      IS_SENTRY_ENABLED: true
+      IS_SENTRY_ENABLED: 'true'
       WEBACL_ARN: ${ssm:/mentorpal/v2/api_firewall_arn, ''}
       LRS_ENDPOINT: ${ssm:/mentorpal/lrs/qa/LRS_ENDPOINT, ''}
       LRS_USERNAME: ${ssm:/mentorpal/lrs/qa/LRS_USERNAME, ''}
       LRS_PASSWORD: ${ssm:/mentorpal/lrs/qa/LRS_PASSWORD, ''}
     prod:
-      IS_SENTRY_ENABLED: true
+      IS_SENTRY_ENABLED: 'true'
       WEBACL_ARN: ${ssm:/mentorpal/cf/api_firewall_arn, ''}
       LRS_ENDPOINT: ${ssm:/mentorpal/lrs/prod/LRS_ENDPOINT, ''}
       LRS_USERNAME: ${ssm:/mentorpal/lrs/prod/LRS_USERNAME, ''}
@@ -104,9 +104,7 @@ provider:
     STAGE: ${self:provider.stage}
     NODE_ENV: careerfair-${self:provider.stage}
     IS_SENTRY_ENABLED: ${self:custom.stages.${self:provider.stage}.IS_SENTRY_ENABLED}
-    # TODO create in ssm:
-    # SENTRY_DSN_MENTOR_LRS: ${ssm:/mentorpal/mentor-lrs/sentry_dsn}
-    SENTRY_DSN_MENTOR_LRS: 'todo create in ssm'
+    SENTRY_DSN_MENTOR_LRS: ${ssm:/mentorpal/mentor-lrs/sentry_dsn}
     NODE_OPTIONS: '--enable-source-maps --stack-trace-limit=50'
     LRS_ENDPOINT: ${self:custom.stages.${self:provider.stage}.LRS_ENDPOINT}
     LRS_USERNAME: ${self:custom.stages.${self:provider.stage}.LRS_USERNAME}

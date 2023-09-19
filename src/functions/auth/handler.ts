@@ -14,7 +14,8 @@ import { middyfy } from "@libs/lambda";
 import { BadRequest, MethodNotAllowed } from "http-errors";
 import datestr from "@libs/utils/datestr";
 import { toBasicAuthToken } from "@libs/user";
-
+import { loadSentry, wrapHandlerWithSentry } from "../../utils";
+loadSentry();
 export const auth: Handler<
   APIGatewayProxyEvent,
   APIGatewayProxyResult
@@ -54,4 +55,4 @@ export const auth: Handler<
   });
 };
 
-export const main = middyfy(auth);
+export const main = middyfy(wrapHandlerWithSentry(auth));

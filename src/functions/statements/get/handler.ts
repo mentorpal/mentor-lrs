@@ -13,7 +13,8 @@ import { formatJSONResponse } from "../../../libs/api-gateway";
 import { findLRS, user2XapiAgent } from "../../../libs/xapi";
 import { fromBasicAuthToken } from "../../../libs/user";
 import { middyfy } from "../../../libs/lambda";
-
+import { loadSentry, wrapHandlerWithSentry } from "../../../utils";
+loadSentry();
 export const statementsGet: Handler<
   APIGatewayProxyEvent,
   APIGatewayProxyResult
@@ -30,7 +31,7 @@ export const statementsGet: Handler<
       related_agents: event.queryStringParameters["related_agents"],
       since: event.queryStringParameters["since"],
       until: event.queryStringParameters["until"],
-      limit: event.queryStringParameters["limit"],
+      limit: parseInt(event.queryStringParameters["limit"]),
       format: event.queryStringParameters["format"],
       ascending: event.queryStringParameters["ascending"],
     });
@@ -40,4 +41,4 @@ export const statementsGet: Handler<
   }
 };
 
-export const main = middyfy(statementsGet);
+export const main = middyfy(wrapHandlerWithSentry(statementsGet));

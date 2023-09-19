@@ -13,10 +13,11 @@ import exampleStatements from "./fixture.statements";
 import { statementsGet } from "../src/functions/statements/get/handler";
 import { statementsPost } from "../src/functions/statements/post/handler";
 import { statementsPut } from "../src/functions/statements/put/handler";
+import { wrapHandlerTestRequest } from "../src/utils";
 
 chai.use(require("sinon-chai"));
 let lrsMock: any = null;
-let auth: string = null;
+let auth: string = "";
 const username = "user1";
 const userid = "user1Id";
 
@@ -38,7 +39,7 @@ describe("xapi/statements", () => {
   });
 
   afterEach(async () => {
-    auth = null;
+    auth = "";
     sinon.restore();
   });
 
@@ -46,13 +47,20 @@ describe("xapi/statements", () => {
     it("fetches statements for the authenciated user from the lrs backend", async () => {
       const statements = exampleStatements(username, userid, true);
       lrsMock.fetchStatements.returns(statements);
-      const request = {
+      const request = wrapHandlerTestRequest({
         headers: {
           Authorization: auth,
         },
         queryStringParameters: {},
-      };
-      const response = await statementsGet(request);
+      });
+      const response = await statementsGet(
+        request.event,
+        request.context,
+        request.callback
+      );
+      if (!response) {
+        throw new Error("response is undefined");
+      }
       expect(response.statusCode).to.equal(200);
       expect(response.body).to.eql(JSON.stringify(statements));
     });
@@ -61,14 +69,21 @@ describe("xapi/statements", () => {
   describe("POST", () => {
     it("posts statements from the authenciated user to the lrs backend", async () => {
       const statements = exampleStatements(username, userid, true);
-      const request = {
+      const request = wrapHandlerTestRequest({
         headers: {
           Authorization: auth,
         },
         queryStringParameters: {},
-        body: statements,
-      };
-      const response = await statementsPost(request);
+        body: JSON.stringify(statements),
+      });
+      const response = await statementsPost(
+        request.event,
+        request.context,
+        request.callback
+      );
+      if (!response) {
+        throw new Error("response is undefined");
+      }
       expect(response.statusCode).to.equal(200);
     });
   });
@@ -80,14 +95,21 @@ describe("xapi/statements", () => {
         ...statements[0],
         id: "id is required",
       };
-      const request = {
+      const request = wrapHandlerTestRequest({
         headers: {
           Authorization: auth,
         },
         queryStringParameters: {},
-        body: statement,
-      };
-      const response = await statementsPut(request);
+        body: JSON.stringify(statement),
+      });
+      const response = await statementsPut(
+        request.event,
+        request.context,
+        request.callback
+      );
+      if (!response) {
+        throw new Error("response is undefined");
+      }
       expect(response.statusCode).to.equal(204);
     });
   });
