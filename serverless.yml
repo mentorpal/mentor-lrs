@@ -55,19 +55,19 @@ custom:
   stages:
     dev:
       IS_SENTRY_ENABLED: 'false'
-      WEBACL_ARN: ${ssm:/mentorpal/newdev/api_firewall_arn, ''}
+      WEBACL_ARN: ${ssm:/devmentorpal/api_firewall_arn, ''}
       LRS_ENDPOINT: ${ssm:/mentorpal/lrs/dev/LRS_ENDPOINT, ''}
       LRS_USERNAME: ${ssm:/mentorpal/lrs/dev/LRS_USERNAME, ''}
       LRS_PASSWORD: ${ssm:/mentorpal/lrs/dev/LRS_PASSWORD, ''}
     qa:
       IS_SENTRY_ENABLED: 'true'
-      WEBACL_ARN: ${ssm:/mentorpal/v2/api_firewall_arn, ''}
+      WEBACL_ARN: ${ssm:/qamentorpal/api_firewall_arn, ''}
       LRS_ENDPOINT: ${ssm:/mentorpal/lrs/qa/LRS_ENDPOINT, ''}
       LRS_USERNAME: ${ssm:/mentorpal/lrs/qa/LRS_USERNAME, ''}
       LRS_PASSWORD: ${ssm:/mentorpal/lrs/qa/LRS_PASSWORD, ''}
     prod:
       IS_SENTRY_ENABLED: 'true'
-      WEBACL_ARN: ${ssm:/mentorpal/cf/api_firewall_arn, ''}
+      WEBACL_ARN: ${ssm:/mentorpal/api_firewall_arn, ''}
       LRS_ENDPOINT: ${ssm:/mentorpal/lrs/prod/LRS_ENDPOINT, ''}
       LRS_USERNAME: ${ssm:/mentorpal/lrs/prod/LRS_USERNAME, ''}
       LRS_PASSWORD: ${ssm:/mentorpal/lrs/prod/LRS_PASSWORD, ''}
