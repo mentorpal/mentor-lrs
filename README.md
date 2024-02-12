@@ -29,7 +29,7 @@ Check the [sls invoke local command documentation](https://www.serverless.com/fr
 ### Remotely
 
 ```
-$ curl https://api-dev.mentorpal.org/lrs/hello
+$ curl https://api.devmentorpal.org/lrs/hello
 {"message":"Hello Serverless World!","event":{"...}}     
 
 ```
