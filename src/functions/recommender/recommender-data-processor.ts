@@ -2,9 +2,11 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { MentorAnswersToQuestionIds, MentorToSubfield, QuestionToTopicsAndSubfields } from './types';
 
-const MENTORS_TO_SUBFIELDS_CSV_LOCATION = "../../data/mentor_to_subfields.csv"
-const QUESTIONS_TO_TOPICS_AND_SUBFIELDS_CSV_LOCATION = "../../data/question_to_subfields_and_topics.csv"
-const ANSWERS_TO_MENTOR_AND_QUESTION_CSV_LOCATION = "../../data/answers_to_mentor_questions.csv"
+// When packaged, the pattern 'src/data/**/*.csv' places files at 'src/data/*.csv' in the Lambda package
+// Lambda's working directory is /var/task, so we need to resolve from there
+const MENTORS_TO_SUBFIELDS_CSV_LOCATION = "src/data/mentor_to_subfields.csv"
+const QUESTIONS_TO_TOPICS_AND_SUBFIELDS_CSV_LOCATION = "src/data/question_to_subfields_and_topics.csv"
+const ANSWERS_TO_MENTOR_AND_QUESTION_CSV_LOCATION = "src/data/answers_to_mentor_questions.csv"
 
 
 export class RecommenderDataProcessor {
@@ -38,7 +40,8 @@ export class RecommenderDataProcessor {
     
     private loadMentorsData(): void {
         try {
-            const filePath = path.join(__dirname, '..', MENTORS_TO_SUBFIELDS_CSV_LOCATION);
+            // In Lambda, process.cwd() returns '/var/task', the root of the deployment package
+            const filePath = path.join(process.cwd(), MENTORS_TO_SUBFIELDS_CSV_LOCATION);
             const csvContent = fs.readFileSync(filePath, 'utf8');
             const lines = csvContent.trim().split('\n');
             
@@ -66,7 +69,8 @@ export class RecommenderDataProcessor {
     
     private loadQuestionsData(): void {
         try {
-            const filePath = path.join(__dirname, '..', QUESTIONS_TO_TOPICS_AND_SUBFIELDS_CSV_LOCATION);
+            // In Lambda, process.cwd() returns '/var/task', the root of the deployment package
+            const filePath = path.join(process.cwd(), QUESTIONS_TO_TOPICS_AND_SUBFIELDS_CSV_LOCATION);
             const csvContent = fs.readFileSync(filePath, 'utf8');
             const lines = csvContent.trim().split('\n');
             
@@ -98,7 +102,8 @@ export class RecommenderDataProcessor {
     
     private loadAnswersData(): void {
         try {
-            const filePath = path.join(__dirname, '..', ANSWERS_TO_MENTOR_AND_QUESTION_CSV_LOCATION);
+            // In Lambda, process.cwd() returns '/var/task', the root of the deployment package
+            const filePath = path.join(process.cwd(), ANSWERS_TO_MENTOR_AND_QUESTION_CSV_LOCATION);
             const csvContent = fs.readFileSync(filePath, 'utf8');
             const lines = csvContent.trim().split('\n');
             
