@@ -1,46 +1,22 @@
-import { AnswerPlaybackData, FieldScore } from "./types";
-
-
-export interface BaseMentorpalStatement{
-    actor: {
-        objectType: "Agent",
-        mbox: string,
-        name: string
-    },
-    context: {
-        extensions: {
-            ["tag:adlnet.gov,2013:expapi:0.9:extensions:sessionId"]: string
-        }
-    },
-}
-
-export interface AnswerPlaybackStartedStatement extends BaseMentorpalStatement{
-    result: {
-        extensions: {
-            ["https://mentorpal.org/xapi/verb/answer-playback-started"]: {
-                answerId: string,
-                mentorCur: string,
-                timestampAnswered: number, // EPOCH timestamp
-                answerDuration: number, // in seconds
-                answerConfidence: number, // 0-1 float
-            }
-        }
-    }
-}
+import {
+  AnswerPlaybackData,
+  FieldScore,
+  AnswerPlaybackStartedStatement,
+  BaseMentorpalStatement,
+  answerPlaybackStartedVerb,
+} from "./types";
 
 export function isAnswerPlaybackStartedStatement(
-    statement: BaseMentorpalStatement | AnswerPlaybackStartedStatement
-  ): statement is AnswerPlaybackStartedStatement {
-    return (
-      typeof statement === "object" &&
-      statement !== null &&
-      !!(
-        (statement as AnswerPlaybackStartedStatement).result?.extensions?.[
-          "https://mentorpal.org/xapi/verb/answer-playback-started"
-        ]
-      )
-    );
-  }
+  statement: BaseMentorpalStatement | AnswerPlaybackStartedStatement
+): statement is AnswerPlaybackStartedStatement {
+  return (
+    typeof statement === "object" &&
+    statement !== null &&
+    !!(statement as AnswerPlaybackStartedStatement).result?.extensions?.[
+      answerPlaybackStartedVerb
+    ]
+  );
+}
 
 /**
  * Builds a matrix from answer playback data where each row represents an answer
@@ -49,38 +25,40 @@ export function isAnswerPlaybackStartedStatement(
  * @param answerPlaybackData - Array of answer playback data objects
  * @returns Object containing the matrix and ordered list of field names
  */
-export function buildAnswerFieldMatrix(answerPlaybackData: AnswerPlaybackData[]): {
-    matrix: number[][],
-    fieldNames: string[]
+export function buildAnswerFieldMatrix(
+  answerPlaybackData: AnswerPlaybackData[]
+): {
+  matrix: number[][];
+  fieldNames: string[];
 } {
-    // Collect all unique fields (subfields, topics, and degrees)
-    const allFieldsSet = new Set<string>();
+  // Collect all unique fields (subfields, topics, and degrees)
+  const allFieldsSet = new Set<string>();
 
-    answerPlaybackData.forEach(answer => {
-        answer.subfields.forEach(subfield => allFieldsSet.add(subfield));
-        answer.topics.forEach(topic => allFieldsSet.add(topic));
+  answerPlaybackData.forEach((answer) => {
+    answer.subfields.forEach((subfield) => allFieldsSet.add(subfield));
+    answer.topics.forEach((topic) => allFieldsSet.add(topic));
+  });
+
+  // Convert to sorted array for consistent ordering
+  const fieldNames = Array.from(allFieldsSet).sort();
+
+  // Build the matrix
+  const matrix: number[][] = answerPlaybackData.map((answer) => {
+    const row = new Array(fieldNames.length).fill(0);
+
+    // Mark fields that are present in this answer
+    const answerFields = new Set([...answer.subfields, ...answer.topics]);
+
+    fieldNames.forEach((field, index) => {
+      if (answerFields.has(field)) {
+        row[index] = 1;
+      }
     });
 
-    // Convert to sorted array for consistent ordering
-    const fieldNames = Array.from(allFieldsSet).sort();
+    return row;
+  });
 
-    // Build the matrix
-    const matrix: number[][] = answerPlaybackData.map(answer => {
-        const row = new Array(fieldNames.length).fill(0);
-
-        // Mark fields that are present in this answer
-        const answerFields = new Set([...answer.subfields, ...answer.topics]);
-
-        fieldNames.forEach((field, index) => {
-            if (answerFields.has(field)) {
-                row[index] = 1;
-            }
-        });
-
-        return row;
-    });
-
-    return { matrix, fieldNames };
+  return { matrix, fieldNames };
 }
 
 /**
@@ -92,35 +70,35 @@ export function buildAnswerFieldMatrix(answerPlaybackData: AnswerPlaybackData[])
  * @returns Array of top-N field scores sorted by score descending
  */
 export function getTopNFields(
-    matrix: number[][],
-    fieldNames: string[],
-    topN: number = 5
+  matrix: number[][],
+  fieldNames: string[],
+  topN: number = 5
 ): FieldScore[] {
-    if (matrix.length === 0) {
-        return [];
+  if (matrix.length === 0) {
+    return [];
+  }
+
+  const numFields = fieldNames.length;
+  const fieldScores: FieldScore[] = [];
+
+  // Calculate average score for each field across all answers
+  for (let fieldIndex = 0; fieldIndex < numFields; fieldIndex++) {
+    let sum = 0;
+
+    for (let answerIndex = 0; answerIndex < matrix.length; answerIndex++) {
+      sum += matrix[answerIndex][fieldIndex];
     }
 
-    const numFields = fieldNames.length;
-    const fieldScores: FieldScore[] = [];
+    const averageScore = sum / matrix.length;
 
-    // Calculate average score for each field across all answers
-    for (let fieldIndex = 0; fieldIndex < numFields; fieldIndex++) {
-        let sum = 0;
+    fieldScores.push({
+      field: fieldNames[fieldIndex],
+      score: averageScore,
+    });
+  }
 
-        for (let answerIndex = 0; answerIndex < matrix.length; answerIndex++) {
-            sum += matrix[answerIndex][fieldIndex];
-        }
+  // Sort by score descending and take top N
+  fieldScores.sort((a, b) => b.score - a.score);
 
-        const averageScore = sum / matrix.length;
-
-        fieldScores.push({
-            field: fieldNames[fieldIndex],
-            score: averageScore
-        });
-    }
-
-    // Sort by score descending and take top N
-    fieldScores.sort((a, b) => b.score - a.score);
-
-    return fieldScores.slice(0, topN);
+  return fieldScores.slice(0, topN);
 }
