@@ -60,3 +60,19 @@ export interface MentorAnswersToQuestionIds{
     mentorId: string,
     questionId: string
 }
+
+export interface AnswerPlaybackData{
+    mentorId: string,
+    questionId: string,
+    answerId: string,
+    subfields: string[],
+    topics: string[],
+    startTimestamp: number,
+    duration: number,
+    confidence: number
+}
+
+export interface FieldScore {
+    field: string;
+    score: number;
+}

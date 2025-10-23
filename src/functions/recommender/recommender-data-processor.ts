@@ -1,15 +1,16 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { MentorAnswersToQuestionIds, MentorToSubfield, QuestionToTopicsAndSubfields } from './types';
 
-const MENTORS_TO_SUBFIELDS_CSV_LOCATION = "../../../data/mentor_to_subfields.csv"
-const QUESTIONS_TO_TOPICS_AND_SUBFIELDS_CSV_LOCATION = "../../../data/question_to_subfields_and_topics.csv"
-const ANSWERS_TO_MENTOR_AND_QUESTION_CSV_LOCATION = "../../../data/answers_to_mentor_questions.csv"
+const MENTORS_TO_SUBFIELDS_CSV_LOCATION = "../../data/mentor_to_subfields.csv"
+const QUESTIONS_TO_TOPICS_AND_SUBFIELDS_CSV_LOCATION = "../../data/question_to_subfields_and_topics.csv"
+const ANSWERS_TO_MENTOR_AND_QUESTION_CSV_LOCATION = "../../data/answers_to_mentor_questions.csv"
 
-import { MentorToSubfield, QuestionToTopicsAndSubfields, MentorAnswersToQuestionIds } from "./types";
 
 export class RecommenderDataProcessor {
     private static instance: RecommenderDataProcessor;
     
+    // Data storage
     public mentors: MentorToSubfield[] = [];
     public questions: QuestionToTopicsAndSubfields[] = [];
     public answers: MentorAnswersToQuestionIds[] = [];
@@ -18,6 +19,7 @@ export class RecommenderDataProcessor {
         this.loadAllData();
     }
     
+    // Singleton getter
     public static getInstance(): RecommenderDataProcessor {
         if (!RecommenderDataProcessor.instance) {
             RecommenderDataProcessor.instance = new RecommenderDataProcessor();
@@ -26,9 +28,12 @@ export class RecommenderDataProcessor {
     }
     
     private loadAllData(): void {
+        console.log('🔄 Loading recommender data...');
         this.loadMentorsData();
         this.loadQuestionsData();
         this.loadAnswersData();
+        console.log('✅ All recommender data loaded successfully');
+        console.log(`📊 Loaded ${this.mentors.length} mentors, ${this.questions.length} questions, ${this.answers.length} answers`);
     }
     
     private loadMentorsData(): void {
@@ -41,7 +46,7 @@ export class RecommenderDataProcessor {
             for (let i = 1; i < lines.length; i++) {
                 const [mentorId, mentorName, subfieldsStr, degree] = lines[i].split(',');
                 
-                // split subfields (comma-separated values within quotes)
+                // Handle subfields (comma-separated values within quotes)
                 const subfields = subfieldsStr.replace(/"/g, '').split(',').map(s => s.trim());
                 
                 this.mentors.push({
@@ -52,8 +57,9 @@ export class RecommenderDataProcessor {
                 });
             }
             
+            console.log(`✅ Loaded ${this.mentors.length} mentors`);
         } catch (error) {
-            console.error('Error loading mentors data:', error);
+            console.error('❌ Error loading mentors data:', error);
             throw error;
         }
     }
@@ -64,10 +70,11 @@ export class RecommenderDataProcessor {
             const csvContent = fs.readFileSync(filePath, 'utf8');
             const lines = csvContent.trim().split('\n');
             
+            // Skip header row
             for (let i = 1; i < lines.length; i++) {
                 const [questionId, questionText, topicIdsStr, topicNamesStr, subfieldsStr, degree] = lines[i].split(',');
                 
-                // split topicIds, topicNames, subfields (comma-separated values within quotes)
+                // Handle arrays (comma-separated values within quotes)
                 const topicIds = topicIdsStr ? topicIdsStr.replace(/"/g, '').split(',').map(s => s.trim()).filter(s => s) : [];
                 const topicNames = topicNamesStr ? topicNamesStr.replace(/"/g, '').split(',').map(s => s.trim()).filter(s => s) : [];
                 const subfields = subfieldsStr ? subfieldsStr.replace(/"/g, '').split(',').map(s => s.trim()).filter(s => s) : [];
@@ -82,8 +89,9 @@ export class RecommenderDataProcessor {
                 });
             }
             
+            console.log(`✅ Loaded ${this.questions.length} questions`);
         } catch (error) {
-            console.error('Error loading questions data:', error);
+            console.error('❌ Error loading questions data:', error);
             throw error;
         }
     }
@@ -94,6 +102,7 @@ export class RecommenderDataProcessor {
             const csvContent = fs.readFileSync(filePath, 'utf8');
             const lines = csvContent.trim().split('\n');
             
+            // Skip header row
             for (let i = 1; i < lines.length; i++) {
                 const [answerId, mentorId, questionId] = lines[i].split(',');
                 
@@ -104,12 +113,14 @@ export class RecommenderDataProcessor {
                 });
             }
             
+            console.log(`✅ Loaded ${this.answers.length} answers`);
         } catch (error) {
-            console.error('Error loading answers data:', error);
+            console.error('❌ Error loading answers data:', error);
             throw error;
         }
     }
     
+    // Utility methods for data access
     public getMentorById(mentorId: string): MentorToSubfield | undefined {
         return this.mentors.find(mentor => mentor.mentorId === mentorId);
     }
