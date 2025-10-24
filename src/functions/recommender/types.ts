@@ -25,6 +25,7 @@ export interface AnswerPlaybackStartedStatement extends BaseMentorpalStatement {
         timestampAnswered: number; // EPOCH timestamp
         answerDuration: number; // in seconds
         answerConfidence: number; // 0-1 float
+        answerQuestionId: string;
       };
     };
   };

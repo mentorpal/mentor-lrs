@@ -84,7 +84,7 @@ const recommender: Handler<
   const answerPlaybackData: AnswerPlaybackData[] =
     confidentAnswerPlaybackStatements.map((a) => {
       const answerData = a.result.extensions[answerPlaybackStartedVerb];
-      const questionId = recommenderData.getQuestionIdByAnswerId(
+      const questionId = answerData.answerQuestionId || recommenderData.getQuestionIdByAnswerId(
         answerData.answerId
       );
       const questionSubfieldTopicData = questionId
