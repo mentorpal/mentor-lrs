@@ -84,9 +84,9 @@ const recommender: Handler<
   const answerPlaybackData: AnswerPlaybackData[] =
     confidentAnswerPlaybackStatements.map((a) => {
       const answerData = a.result.extensions[answerPlaybackStartedVerb];
-      const questionId = answerData.answerQuestionId || recommenderData.getQuestionIdByAnswerId(
-        answerData.answerId
-      );
+      const questionId =
+        answerData.answerQuestionId ||
+        recommenderData.getQuestionIdByAnswerId(answerData.answerId);
       const questionSubfieldTopicData = questionId
         ? recommenderData.getQuestionById(questionId)
         : undefined;
@@ -124,21 +124,8 @@ const recommender: Handler<
       };
     });
 
-  // Build the matrix from answer playback data
   const { matrix, fieldNames } = buildAnswerFieldMatrix(answerPlaybackData);
-  console.log(
-    "\n📊 Matrix dimensions:",
-    matrix.length,
-    "answers x",
-    fieldNames.length,
-    "fields"
-  );
-
-  // Get top-N fields
   const topNResults = getTopNFields(matrix, fieldNames, numResults);
-  console.log("\n🏆 Top", numResults, "Fields:");
-  console.log(JSON.stringify(topNResults, null, 2));
-
   return formatJSONResponse(topNResults);
 };
 

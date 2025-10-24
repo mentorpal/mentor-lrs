@@ -17,7 +17,6 @@ const ANSWERS_TO_MENTOR_AND_QUESTION_CSV_LOCATION =
 export class RecommenderDataProcessor {
   private static instance: RecommenderDataProcessor;
 
-  // Data storage
   public mentors: MentorToSubfield[] = [];
   public questions: QuestionToTopicsAndSubfields[] = [];
   public answers: MentorAnswersToQuestionIds[] = [];

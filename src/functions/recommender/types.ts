@@ -21,11 +21,11 @@ export interface AnswerPlaybackStartedStatement extends BaseMentorpalStatement {
     extensions: {
       [answerPlaybackStartedVerb]: {
         answerId: string;
+        answerQuestionId: string;
         mentorCur: string;
         timestampAnswered: number; // EPOCH timestamp
         answerDuration: number; // in seconds
         answerConfidence: number; // 0-1 float
-        answerQuestionId: string;
       };
     };
   };
