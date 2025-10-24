@@ -25,7 +25,6 @@ export class RecommenderDataProcessor {
     this.loadAllData();
   }
 
-  // Singleton getter
   public static getInstance(): RecommenderDataProcessor {
     if (!RecommenderDataProcessor.instance) {
       RecommenderDataProcessor.instance = new RecommenderDataProcessor();
@@ -34,14 +33,9 @@ export class RecommenderDataProcessor {
   }
 
   private loadAllData(): void {
-    console.log("🔄 Loading recommender data...");
     this.loadMentorsData();
     this.loadQuestionsData();
     this.loadAnswersData();
-    console.log("✅ All recommender data loaded successfully");
-    console.log(
-      `📊 Loaded ${this.mentors.length} mentors, ${this.questions.length} questions, ${this.answers.length} answers`
-    );
   }
 
   private loadMentorsData(): void {
@@ -60,10 +54,7 @@ export class RecommenderDataProcessor {
           lines[i].split(",");
 
         // Handle subfields (comma-separated values within quotes)
-        const subfields = subfieldsStr
-          .replace(/"/g, "")
-          .split(",")
-          .map((s) => s.trim());
+        const subfields = this.parseCommaSeparatedField(subfieldsStr);
 
         this.mentors.push({
           mentorId: mentorId.trim(),
@@ -78,6 +69,16 @@ export class RecommenderDataProcessor {
       console.error("❌ Error loading mentors data:", error);
       throw error;
     }
+  }
+
+  private parseCommaSeparatedField(field: string): string[] {
+    return field
+      ? field
+          .replace(/"/g, "")
+          .split(",")
+          .map((s) => s.trim())
+          .filter((s) => s)
+      : [];
   }
 
   private loadQuestionsData(): void {
@@ -101,28 +102,9 @@ export class RecommenderDataProcessor {
           degree,
         ] = lines[i].split(",");
 
-        // Handle arrays (comma-separated values within quotes)
-        const topicIds = topicIdsStr
-          ? topicIdsStr
-              .replace(/"/g, "")
-              .split(",")
-              .map((s) => s.trim())
-              .filter((s) => s)
-          : [];
-        const topicNames = topicNamesStr
-          ? topicNamesStr
-              .replace(/"/g, "")
-              .split(",")
-              .map((s) => s.trim())
-              .filter((s) => s)
-          : [];
-        const subfields = subfieldsStr
-          ? subfieldsStr
-              .replace(/"/g, "")
-              .split(",")
-              .map((s) => s.trim())
-              .filter((s) => s)
-          : [];
+        const topicIds = this.parseCommaSeparatedField(topicIdsStr);
+        const topicNames = this.parseCommaSeparatedField(topicNamesStr);
+        const subfields = this.parseCommaSeparatedField(subfieldsStr);
 
         this.questions.push({
           questionId: questionId.trim(),

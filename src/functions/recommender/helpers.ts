@@ -21,8 +21,6 @@ export function isAnswerPlaybackStartedStatement(
 /**
  * Builds a matrix from answer playback data where each row represents an answer
  * and columns represent subfields, topics, and degrees (1 if present, 0 if not)
- *
- * @param answerPlaybackData - Array of answer playback data objects
  * @returns Object containing the matrix and ordered list of field names
  */
 export function buildAnswerFieldMatrix(
@@ -39,22 +37,16 @@ export function buildAnswerFieldMatrix(
     answer.topics.forEach((topic) => allFieldsSet.add(topic));
   });
 
-  // Convert to sorted array for consistent ordering
   const fieldNames = Array.from(allFieldsSet).sort();
 
-  // Build the matrix
   const matrix: number[][] = answerPlaybackData.map((answer) => {
     const row = new Array(fieldNames.length).fill(0);
-
-    // Mark fields that are present in this answer
     const answerFields = new Set([...answer.subfields, ...answer.topics]);
-
     fieldNames.forEach((field, index) => {
       if (answerFields.has(field)) {
         row[index] = 1;
       }
     });
-
     return row;
   });
 
@@ -97,7 +89,7 @@ export function getTopNFields(
     });
   }
 
-  // Sort by score descending and take top N
+  // descending order
   fieldScores.sort((a, b) => b.score - a.score);
 
   return fieldScores.slice(0, topN);
