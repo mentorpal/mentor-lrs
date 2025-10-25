@@ -5,6 +5,8 @@ frameworkVersion: '4'
 
 package:
   individually: true
+  patterns:
+    - 'src/data/**/*.csv'
 
 plugins:
   - serverless-domain-manager
@@ -133,6 +135,23 @@ functions:
           path: auth/guesttoken
           method: POST
           cors: true
+  recommender:
+    timeout: 20
+    handler: src/functions/recommender/handler.main
+    events:
+      - http:
+          path: xapi/recommender
+          method: GET
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+              - X-Experience-API-Version
   statementsGet:
     timeout: 20
     handler: src/functions/statements/get/handler.main
