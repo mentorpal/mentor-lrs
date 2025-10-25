@@ -1,13 +1,14 @@
 service: mentor-lrs
 
 # pin to a specific Serverless version, major releases might not be backward compatible:
-frameworkVersion: '3'
+frameworkVersion: '4'
 
 package:
   individually: true
+  patterns:
+    - 'src/data/**/*.csv'
 
 plugins:
-  - serverless-esbuild
   - serverless-domain-manager
   # TODO
   # - serverless-layers
@@ -42,7 +43,7 @@ custom:
     sourcemap: true
     keepNames: true
     platform: 'node'
-    target: 'node16' # should match provider.runtime
+    target: 'node22' # should match provider.runtime
     exclude:
       - 'aws-sdk'
     define:
@@ -76,7 +77,7 @@ provider:
   name: aws
   region: ${opt:region, 'us-east-1'}
   stage: ${opt:stage, 'dev'} # stage is dev unless otherwise specified with --stage flag
-  runtime: nodejs16.x # should match custom.esbuild.target
+  runtime: nodejs22.x # should match custom.esbuild.target
   endpointType: regional
   memorySize: 256
   tracing:
@@ -134,6 +135,23 @@ functions:
           path: auth/guesttoken
           method: POST
           cors: true
+  recommender:
+    timeout: 20
+    handler: src/functions/recommender/handler.main
+    events:
+      - http:
+          path: xapi/recommender
+          method: GET
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+              - X-Experience-API-Version
   statementsGet:
     timeout: 20
     handler: src/functions/statements/get/handler.main
