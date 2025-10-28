@@ -33,6 +33,7 @@ describe("recommender endpoint", () => {
   describe("GET recommender", () => {
     it("returns top N recommended fields based on confident answer playback statements", async () => {
       const name = "testuser@example.com";
+      const mbox = "mailto:testuser@example.com";
       const sessionId = "test-session-123";
       const timestampStart = "2024-01-01T00:00:00.000Z";
       const numResults = 3;
@@ -49,6 +50,7 @@ describe("recommender endpoint", () => {
         path: "/recommender",
         queryStringParameters: {
           name,
+          mbox,
           sessionId,
           timestampStart,
           numResults: String(numResults),
@@ -81,7 +83,7 @@ describe("recommender endpoint", () => {
       expect(xapiStub.getStatements.calledOnce).to.be.true;
       const callArgs = xapiStub.getStatements.firstCall.args[0];
       expect(callArgs.agent.name).to.equal(name);
-      expect(callArgs.agent.mbox).to.equal(`mailto:${name}`);
+      expect(callArgs.agent.mbox).to.equal(mbox);
       expect(callArgs.since).to.equal(timestampStart);
     });
   });

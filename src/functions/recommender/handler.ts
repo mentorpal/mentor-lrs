@@ -51,6 +51,7 @@ const recommender: Handler<
 > = async (event) => {
   const xapi = getLRSInstance();
   const name = event.queryStringParameters["name"];
+  const mbox = event.queryStringParameters["mbox"];
   const sessionId = event.queryStringParameters["sessionId"];
   const timestampStart = event.queryStringParameters["timestampStart"];
   const timestampEndOptional = event.queryStringParameters["timestampEnd"];
@@ -59,7 +60,7 @@ const recommender: Handler<
     agent: {
       objectType: "Agent",
       name: name,
-      mbox: "mailto:" + name,
+      mbox: mbox,
     },
     since: timestampStart,
     until: timestampEndOptional ?? undefined,
