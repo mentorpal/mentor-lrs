@@ -4,6 +4,7 @@ import XAPI from "@xapi/xapi";
 import { mentorpalPlaybackStatements } from "./fixture.statements";
 import { main as recommenderHandler } from "../src/functions/recommender/handler";
 import { wrapHandlerTestRequest } from "../src/utils";
+import { PAGE_FIELD_NAMES } from "../src/functions/recommender/recommender-data-processor";
 
 chai.use(require("sinon-chai"));
 
@@ -69,14 +70,26 @@ describe("recommender endpoint", () => {
       expect(response.statusCode).to.equal(200);
 
       const body = JSON.parse(response.body);
-      expect(body).to.be.an("array");
-      expect(body.length).to.be.at.most(numResults);
+      expect(body).to.be.an("object");
+      expect(body).to.have.property("subfieldScores");
+      expect(body).to.have.property("pageFieldScores");
+      expect(body.subfieldScores).to.be.an("array");
+      expect(body.pageFieldScores).to.be.an("array");
+      expect(body.subfieldScores.length).to.be.at.most(numResults);
+      expect(body.pageFieldScores.length).to.be.at.most(
+        PAGE_FIELD_NAMES.length
+      );
 
       // Verify structure of results
-      if (body.length > 0) {
-        expect(body[0]).to.have.property("field");
-        expect(body[0]).to.have.property("score");
-        expect(body[0].score).to.be.a("number");
+      if (body.subfieldScores.length > 0) {
+        expect(body.subfieldScores[0]).to.have.property("field");
+        expect(body.subfieldScores[0]).to.have.property("score");
+        expect(body.subfieldScores[0].score).to.be.a("number");
+      }
+      if (body.pageFieldScores.length > 0) {
+        expect(body.pageFieldScores[0]).to.have.property("field");
+        expect(body.pageFieldScores[0]).to.have.property("score");
+        expect(body.pageFieldScores[0].score).to.be.a("number");
       }
 
       // Verify XAPI was called with correct parameters
