@@ -14,6 +14,14 @@ const QUESTIONS_TO_TOPICS_AND_SUBFIELDS_CSV_LOCATION =
 const ANSWERS_TO_MENTOR_AND_QUESTION_CSV_LOCATION =
   "src/data/answers_to_mentor_questions.csv";
 
+export const PAGE_FIELD_NAMES = [
+  "Research",
+  "ExploreCareers",
+  "GradSchool",
+  "Internships",
+  "Experts",
+];
+
 export class RecommenderDataProcessor {
   private static instance: RecommenderDataProcessor;
 

@@ -24,6 +24,7 @@ import { RecommenderDataProcessor } from "./recommender-data-processor";
 import {
   buildAnswerFieldMatrix,
   getTopNFields,
+  getAllPageFieldNames,
   isAnswerPlaybackStartedStatement,
 } from "./helpers";
 
@@ -66,19 +67,20 @@ const recommender: Handler<
     until: timestampEndOptional ?? undefined,
   });
 
-  const confidentAnswerPlaybackStatements: AnswerPlaybackStartedStatement[] = (
-    res.data.statements as any
-  )
-    .filter((statement: any) => isAnswerPlaybackStartedStatement(statement))
-    .filter(
-      (a: AnswerPlaybackStartedStatement) =>
-        a.result.extensions[answerPlaybackStartedVerb].answerConfidence >
-        CONFIDENCE_THRESHOLD
-    )
-    .filter(
-      (a: AnswerPlaybackStartedStatement) =>
-        a.context.extensions[sessionIdExtensionKey] === sessionId
-    );
+  const confidentAnswerPlaybackStatements: AnswerPlaybackStartedStatement[] =
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (res.data.statements as any)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .filter((statement: any) => isAnswerPlaybackStartedStatement(statement))
+      .filter(
+        (a: AnswerPlaybackStartedStatement) =>
+          a.result.extensions[answerPlaybackStartedVerb].answerConfidence >
+          CONFIDENCE_THRESHOLD
+      )
+      .filter(
+        (a: AnswerPlaybackStartedStatement) =>
+          a.context.extensions[sessionIdExtensionKey] === sessionId
+      );
 
   const recommenderData = RecommenderDataProcessor.getInstance();
 
@@ -126,8 +128,12 @@ const recommender: Handler<
     });
 
   const { matrix, fieldNames } = buildAnswerFieldMatrix(answerPlaybackData);
-  const topNResults = getTopNFields(matrix, fieldNames, numResults);
-  return formatJSONResponse(topNResults);
+  const subfieldScores = getTopNFields(matrix, fieldNames, numResults);
+  const pageFieldScores = getAllPageFieldNames(matrix, fieldNames);
+  return formatJSONResponse({
+    subfieldScores,
+    pageFieldScores,
+  });
 };
 
 export const main = middyfy(wrapHandlerWithSentry(recommender));

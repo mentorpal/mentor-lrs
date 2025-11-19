@@ -5,6 +5,7 @@ import {
   BaseMentorpalStatement,
   answerPlaybackStartedVerb,
 } from "./types";
+import { PAGE_FIELD_NAMES } from "./recommender-data-processor";
 
 export function isAnswerPlaybackStartedStatement(
   statement: BaseMentorpalStatement | AnswerPlaybackStartedStatement
@@ -54,7 +55,42 @@ export function buildAnswerFieldMatrix(
 }
 
 /**
+ * Gets all PAGE_FIELD_NAMES with their scores in the defined order
+ *
+ * @param matrix - The answer x field matrix
+ * @param fieldNames - Ordered list of field names corresponding to matrix columns
+ * @returns Array of page field scores in the order defined by PAGE_FIELD_NAMES
+ */
+export function getAllPageFieldNames(
+  matrix: number[][],
+  fieldNames: string[]
+): FieldScore[] {
+  if (matrix.length === 0) {
+    return PAGE_FIELD_NAMES.map((field) => ({ field, score: 0 }));
+  }
+
+  return PAGE_FIELD_NAMES.map((pageField) => {
+    const fieldIndex = fieldNames.indexOf(pageField);
+
+    if (fieldIndex === -1) {
+      // Page field not found in matrix, return score of 0
+      return { field: pageField, score: 0 };
+    }
+
+    // Calculate average score for this page field
+    let sum = 0;
+    for (let answerIndex = 0; answerIndex < matrix.length; answerIndex++) {
+      sum += matrix[answerIndex][fieldIndex];
+    }
+    const averageScore = sum / matrix.length;
+
+    return { field: pageField, score: averageScore };
+  });
+}
+
+/**
  * Processes the matrix to get top-N fields by averaging scores across all answers
+ * Excludes PAGE_FIELD_NAMES from the results
  *
  * @param matrix - The answer x field matrix
  * @param fieldNames - Ordered list of field names corresponding to matrix columns
@@ -64,7 +100,7 @@ export function buildAnswerFieldMatrix(
 export function getTopNFields(
   matrix: number[][],
   fieldNames: string[],
-  topN: number = 5
+  topN = 5
 ): FieldScore[] {
   if (matrix.length === 0) {
     return [];
@@ -72,9 +108,17 @@ export function getTopNFields(
 
   const numFields = fieldNames.length;
   const fieldScores: FieldScore[] = [];
+  const pageFieldSet = new Set(PAGE_FIELD_NAMES);
 
   // Calculate average score for each field across all answers
   for (let fieldIndex = 0; fieldIndex < numFields; fieldIndex++) {
+    const fieldName = fieldNames[fieldIndex];
+
+    // Skip page fields
+    if (pageFieldSet.has(fieldName)) {
+      continue;
+    }
+
     let sum = 0;
 
     for (let answerIndex = 0; answerIndex < matrix.length; answerIndex++) {
@@ -84,7 +128,7 @@ export function getTopNFields(
     const averageScore = sum / matrix.length;
 
     fieldScores.push({
-      field: fieldNames[fieldIndex],
+      field: fieldName,
       score: averageScore,
     });
   }
