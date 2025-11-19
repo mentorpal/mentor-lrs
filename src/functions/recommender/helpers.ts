@@ -54,13 +54,6 @@ export function buildAnswerFieldMatrix(
   return { matrix, fieldNames };
 }
 
-/**
- * Gets all PAGE_FIELD_NAMES with their scores in the defined order
- *
- * @param matrix - The answer x field matrix
- * @param fieldNames - Ordered list of field names corresponding to matrix columns
- * @returns Array of page field scores in the order defined by PAGE_FIELD_NAMES
- */
 export function getAllPageFieldNames(
   matrix: number[][],
   fieldNames: string[]
@@ -73,7 +66,6 @@ export function getAllPageFieldNames(
     const fieldIndex = fieldNames.indexOf(pageField);
 
     if (fieldIndex === -1) {
-      // Page field not found in matrix, return score of 0
       return { field: pageField, score: 0 };
     }
 
