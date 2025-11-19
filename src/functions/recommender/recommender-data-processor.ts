@@ -14,6 +14,14 @@ const QUESTIONS_TO_TOPICS_AND_SUBFIELDS_CSV_LOCATION =
 const ANSWERS_TO_MENTOR_AND_QUESTION_CSV_LOCATION =
   "src/data/answers_to_mentor_questions.csv";
 
+export const PAGE_FIELD_NAMES = [
+  "Research",
+  "ExploreCareers",
+  "GradSchool",
+  "Internships",
+  "Experts",
+];
+
 export class RecommenderDataProcessor {
   private static instance: RecommenderDataProcessor;
 
@@ -50,8 +58,8 @@ export class RecommenderDataProcessor {
 
       // Skip header row
       for (let i = 1; i < lines.length; i++) {
-        const [mentorId, mentorName, subfieldsStr, degree] =
-          lines[i].split(",");
+        const fields = this.parseCSVLine(lines[i]);
+        const [mentorId, mentorName, subfieldsStr, degree] = fields;
 
         // Handle subfields (comma-separated values within quotes)
         const subfields = this.parseCommaSeparatedField(subfieldsStr);
@@ -69,6 +77,28 @@ export class RecommenderDataProcessor {
       console.error("❌ Error loading mentors data:", error);
       throw error;
     }
+  }
+
+  private parseCSVLine(line: string): string[] {
+    const fields: string[] = [];
+    let currentField = "";
+    let insideQuotes = false;
+
+    for (let i = 0; i < line.length; i++) {
+      const char = line[i];
+
+      if (char === '"') {
+        insideQuotes = !insideQuotes;
+      } else if (char === "," && !insideQuotes) {
+        fields.push(currentField);
+        currentField = "";
+      } else {
+        currentField += char;
+      }
+    }
+    fields.push(currentField);
+
+    return fields;
   }
 
   private parseCommaSeparatedField(field: string): string[] {
@@ -93,6 +123,7 @@ export class RecommenderDataProcessor {
 
       // Skip header row
       for (let i = 1; i < lines.length; i++) {
+        const fields = this.parseCSVLine(lines[i]);
         const [
           questionId,
           questionText,
@@ -100,7 +131,7 @@ export class RecommenderDataProcessor {
           topicNamesStr,
           subfieldsStr,
           degree,
-        ] = lines[i].split(",");
+        ] = fields;
 
         const topicIds = this.parseCommaSeparatedField(topicIdsStr);
         const topicNames = this.parseCommaSeparatedField(topicNamesStr);
@@ -135,7 +166,8 @@ export class RecommenderDataProcessor {
 
       // Skip header row
       for (let i = 1; i < lines.length; i++) {
-        const [answerId, mentorId, questionId] = lines[i].split(",");
+        const fields = this.parseCSVLine(lines[i]);
+        const [answerId, mentorId, questionId] = fields;
 
         this.answers.push({
           answerId: answerId.trim(),
